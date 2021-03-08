@@ -57,9 +57,11 @@ func (al Alog) write(msg string, wg *sync.WaitGroup) {
 
 	_, err := al.dest.Write([]byte(al.formatMessage(msg)))
 
-	if err != nil {
-		al.errorCh <- err
-	}
+	go func(e error) {
+		if err != nil {
+			al.errorCh <- e
+		}
+	}(err)
 }
 
 func (al Alog) shutdown() {
